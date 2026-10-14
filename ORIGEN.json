@@ -1,0 +1,50 @@
+{
+  "readAt": "2026-10-13",
+  "repositories": {
+    "Map-desing": {
+      "commit": "981ea96e4e0009fe929c760de19dce2e425d5274",
+      "url": "https://github.com/IzayTO/Map-desing",
+      "files": {
+        "view-centers.js": "8293ac8ebb84bdee269732af2d13948eb02a5819d8045cdcc2b46fd6b500e880",
+        "app.js": "1e0a150f1ab17427afc957753b3d4d69dc83cf56752598b0980ed76cd36e0756",
+        "project-io.js": "3a0773e83fc2be9c58247b2a3540d896cc95e5ee45da40e82c8f8afd08440253",
+        "desktop-controls.js": "e0054cd12a3a10c1a358dd03882b29c40f96e6be648e992b61e2d9b2f7f1fa19"
+      }
+    },
+    "Sky-Explorer-VR": {
+      "commit": "95e189a076311808f9843a633879ea38fb5bf225",
+      "url": "https://github.com/IzayTO/Sky-Explorer-VR",
+      "files": {
+        "renderer-factory.js": "ecd339d79d3ef1a90b2dd0f75507b41d8a44d80127e98002a0648023dc4db975",
+        "world-lighting.js": "ff3fc45767f1a66253fe3be880bf2ebe66c9b4add1a896727c67060399505d65",
+        "service-worker.js": "781377b0fc63a1eb18ab580c930a18e496de5b9d039774201c429810a8045063",
+        "lunar-height.png": "bfd9db1c36dc73544002f7ee9ee35faf854122cb42afbe5835db93467e69aa63",
+        "three.module.js": "c54a02bb73b2d74a0630c0b05fe0a2c3689c5d8556e87de464379f50cea42a65",
+        "app.js": "0cc26fd112062fd43d72d8644f73c41c1ba3711ffc8eb6f246be1e64ec5f8a10",
+        "landscape-renderer.js": "d3393b27b059a1f3ff93138570071c85eaeb76eb19f7a6dc71ff8d58c7f406e5",
+        "lunar-light-cache.js": "0eff4ff6f87169621ff2f3269002cbba4205fe31f8ddef9e70a8acdf24667be7",
+        "three.core.js": "9edde002b066a9a05676a6127f67735b62baf399bdea529f2f7e31657da769e6",
+        "lunar-terrain.js": "fd8434cd7875785c9589ef006d804b12f231c458506dcf42d8a2d71a8c1c6ea0",
+        "lunar-sky.js": "9a03e43e235c63ad5d29a1ea521f8e8d36775e306825fd8110cc1a35acabf1b2",
+        "shadow-atlas.js": "7559be14de01238b80767c7ad6c921aeb4cd2e27d86fc519d65f110f672c3753"
+      }
+    },
+    "Sky-Explorer-App": {
+      "commit": "31874ef95e1d80070b6cce1547e1d4d04b38ce8b",
+      "url": "https://github.com/IzayTO/Sky-Explorer-App",
+      "files": {
+        "renderer-factory.js": "5f0d484156cd3eb89afedeb94d150d3664e4ea1759c819d1d3319cd7a3e171ae",
+        "world-lighting.js": "696ea47b24a595ecc0b59e5a560bcaa7b3f8a114bc658a6a66cb876898898b1c",
+        "service-worker.js": "5258a01da49cfc7c8ce00f7ca607e6b12187ffbe2e2be3bb62d9d9dcdd47d3eb",
+        "lunar-height.png": "bfd9db1c36dc73544002f7ee9ee35faf854122cb42afbe5835db93467e69aa63",
+        "app.js": "20b895e08c773204300436c98f2ba261e55a56a229b8139024106b41199d4f8e",
+        "lunar-light-cache.js": "5c03794cd09eaebaad57b86b5c924ea80aeff82993588847197c2eec0223c6ab",
+        "gpu-materials.js": "6ae78473eee894e0c0cc5fce058c537cb655d260f769834a5b234300474cd2e9",
+        "lunar-terrain.js": "20f893badff1d0afa8a3aaa25ea533e23c664f7762982c1d063f864c0a364c2a",
+        "gpu-adapter.js": "17f51d2010b51c86c4d7d5468b1c23315a687fd193d9dbfef1a8cb7b6415e206",
+        "lunar-sky.js": "6d6d62370c9c08b12ed24a4a0ebde74c0c8773130c8d8df2fbe4ec8bccfde487"
+      }
+    }
+  },
+  "originalPNG_SHA256": "bfd9db1c36dc73544002f7ee9ee35faf854122cb42afbe5835db93467e69aa63"
+}

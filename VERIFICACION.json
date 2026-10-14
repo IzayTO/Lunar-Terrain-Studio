@@ -1,0 +1,86 @@
+{
+  "results": [
+    {
+      "test": "Exact original orbit / Earth direction / phase in VR and App, 4097 instants",
+      "status": "PASS",
+      "ms": 21
+    },
+    {
+      "test": "All 1,050,625 RG heights round-trip exactly; no orientation loss",
+      "status": "PASS",
+      "ms": 243
+    },
+    {
+      "test": "Every stroke reversible, canceled transaction exact, redo and tile edges",
+      "status": "PASS",
+      "ms": 28
+    },
+    {
+      "test": "Ray picking uses real full resolution triangles at oblique angles",
+      "status": "PASS",
+      "ms": 4
+    },
+    {
+      "test": "Smooth reduces spike variance; level converges; no accumulation respects envelope",
+      "status": "PASS",
+      "ms": 18
+    },
+    {
+      "test": "Out of range export throws, including NaN",
+      "status": "PASS",
+      "ms": 38
+    },
+    {
+      "test": "Shadow masks block a physical ridge and reverse with sun direction",
+      "status": "PASS",
+      "ms": 3
+    },
+    {
+      "test": "Adaptive cycle refines dawn/dusk; masks and package validate",
+      "status": "PASS",
+      "ms": 51
+    },
+    {
+      "test": "Integration preserves original GLSL literals for WebGPU hash compatibility",
+      "status": "PASS",
+      "ms": 0
+    }
+  ],
+  "adaptiveSamples": 94,
+  "at35percent": {
+    "hour": 8.4,
+    "cycle": 0.35000000000000003,
+    "sun": [
+      0.8088254231141226,
+      0.5233916790025581,
+      0.2680719777879511
+    ],
+    "earth": [
+      -0.5860048996402353,
+      0.7371641110534738,
+      0.3364332489103592
+    ],
+    "phase": 0.7503243941769793,
+    "illumination": 0.4989808863423652,
+    "earthshine": 0.013137846109584342
+  },
+  "workerBake": {
+    "resolution": 513,
+    "samples": 94,
+    "bytes": 6210551,
+    "milliseconds": 1749,
+    "heightSHA256": "8e1dcc754fb9141bdb7a051e05db2d36af46e66aea5d2c6666bfaf8bd7a85141"
+  },
+  "integrationChecks": {
+    "VR-PNG": "PASS; 83 offline assets verified",
+    "VR-shadows": "PASS; 87 offline assets verified",
+    "App-PNG": "PASS; 81 offline assets verified",
+    "App-shadows": "PASS; 85 offline assets verified"
+  },
+  "runtimeLimits": [
+    "No browser UI or physical GPU test was available.",
+    "iPhone Safari and Quest device performance unmeasured."
+  ],
+  "projectPersistence": "PASS: Float32 project ZIP preserves all samples, metadata and heights outside PNG export range",
+  "touchGestureState": "PASS: second finger rolls back active stroke, pending stroke does not begin, no residual-finger drawing"
+}
