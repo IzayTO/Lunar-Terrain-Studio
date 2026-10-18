@@ -7,7 +7,7 @@ export function encodeRG(h){const stats=boundsOf(h);if(stats.out)throw Error(`${
 export function heightAt(h,x,z){const fx=clamp((x+HALF)/STEP,0,N-1),fz=clamp((z+HALF)/STEP,0,N-1),ix=Math.min(N-2,Math.floor(fx)),iz=Math.min(N-2,Math.floor(fz)),a=fx-ix,b=fz-iz,i=iz*N+ix;return a+b<=1?h[i]+(h[i+1]-h[i])*a+(h[i+N]-h[i])*b:h[i+N+1]+(h[i+N]-h[i+N+1])*(1-a)+(h[i+1]-h[i+N+1])*(1-b);}
 export function normalAt(h,x,z){const a=heightAt(h,x-2,z)-heightAt(h,x+2,z),b=heightAt(h,x,z-2)-heightAt(h,x,z+2),l=Math.hypot(a,4,b);return [a/l,4/l,b/l];}
 export const fullRect=()=>({x0:0,z0:0,x1:N-1,z1:N-1});
-export function union(a,b){if(!a)return {...b};return {x0:Math.min(a.x0,b.x0),z0:Math.min(a.z0,b.z0),x1:Math.max(a.x1,b.x1),z1:Math.max(a.z1,b.z1)};}
+export function union(a,b){if(!b)return a;if(!a)return {...b};return {x0:Math.min(a.x0,b.x0),z0:Math.min(a.z0,b.z0),x1:Math.max(a.x1,b.x1),z1:Math.max(a.z1,b.z1)};}
 export function copyRect(h,r){const w=r.x1-r.x0+1,out=new Float32Array(w*(r.z1-r.z0+1));for(let z=r.z0;z<=r.z1;z++)out.set(h.subarray(z*N+r.x0,z*N+r.x1+1),(z-r.z0)*w);return out;}
 export function putRect(h,r,data){const w=r.x1-r.x0+1;for(let z=r.z0;z<=r.z1;z++)h.set(data.subarray((z-r.z0)*w,(z-r.z0+1)*w),z*N+r.x0);}
 export class History {
@@ -21,18 +21,19 @@ export class History {
   clear(){this.undo=[];this.redo=[];this.pending=null;}
 }
 export function brushStamp(h,original,history,x,z,tool,p,dt){
-  const rx=p.diameter/2,rz=rx*(p.shape==='ellipse'?p.aspect:1),angle=p.angle*Math.PI/180,cs=Math.cos(angle),sn=Math.sin(angle),ex=Math.hypot(rx*cs,rz*sn),ez=Math.hypot(rx*sn,rz*cs);
+  const rx=p.diameter/2,rz=rx*(p.shape==='ellipse'?p.aspect:1),angle=p.angle*Math.PI/180,cs=Math.cos(angle),sn=Math.sin(angle),ex=p.shape==='square'?Math.abs(rx*cs)+Math.abs(rz*sn):Math.hypot(rx*cs,rz*sn),ez=p.shape==='square'?Math.abs(rx*sn)+Math.abs(rz*cs):Math.hypot(rx*sn,rz*cs);
   const r={x0:clamp(Math.floor((x-ex+HALF)/STEP),0,N-1),x1:clamp(Math.ceil((x+ex+HALF)/STEP),0,N-1),z0:clamp(Math.floor((z-ez+HALF)/STEP),0,N-1),z1:clamp(Math.ceil((z+ez+HALF)/STEP),0,N-1)};history.capture(r);
   const sr={x0:Math.max(0,r.x0-2),x1:Math.min(N-1,r.x1+2),z0:Math.max(0,r.z0-2),z1:Math.min(N-1,r.z1+2)},sw=sr.x1-sr.x0+1,src=tool==='smooth'?copyRect(h,sr):null;
   for(let j=r.z0;j<=r.z1;j++)for(let i=r.x0;i<=r.x1;i++){
-    const dx=i*STEP-HALF-x,dz=j*STEP-HALF-z,d=Math.hypot((dx*cs+dz*sn)/rx,(-dx*sn+dz*cs)/rz);if(d>=1)continue;
+    const dx=i*STEP-HALF-x,dz=j*STEP-HALF-z,u=(dx*cs+dz*sn)/rx,vv=(-dx*sn+dz*cs)/rz,d=p.shape==='square'?Math.max(Math.abs(u),Math.abs(vv)):Math.hypot(u,vv);if(d>=1)continue;
     const w=smooth((1-d)/Math.max(.12,p.falloff)),k=j*N+i,old=h[k],gain=1-Math.exp(-p.force*.3*dt*w);let v=old;
     if(tool==='raise'||tool==='lower'){
       const sign=tool==='raise'?1:-1;
       if(p.accumulate)v=old+sign*p.force*dt*w;
       else {const base=history.baseline(k),desired=base+sign*p.force*w;v=sign>0?Math.max(old,desired):Math.min(old,desired);}
       v=sign>0?Math.min(v,Math.max(old,p.ceiling)):Math.max(v,Math.min(old,p.floor));
-    }else if(tool==='level')v=old+(p.target-old)*gain;
+    }else if(tool==='flatten')v=old+(p.target-old)*w;
+    else if(tool==='level')v=old+(p.target-old)*gain;
     else if(tool==='restore')v=old+(original[k]-old)*gain;
     else if(tool==='smooth'){
       let total=0,weight=0;for(let b=-2;b<=2;b++)for(let a=-2;a<=2;a++){const sx=clamp(i+a,sr.x0,sr.x1),sz=clamp(j+b,sr.z0,sr.z1),wgt=(3-Math.abs(a))*(3-Math.abs(b));total+=src[(sz-sr.z0)*sw+sx-sr.x0]*wgt;weight+=wgt;}v=old+(total/weight-old)*gain;

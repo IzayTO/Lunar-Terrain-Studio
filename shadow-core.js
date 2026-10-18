@@ -1,4 +1,4 @@
-import {solarAt,LUNAR_DAY} from './solar.js';
+import {solarAt,LUNAR_DAY} from './solar.js?v=2.0.0';
 export const SHADOW_FORMAT='lunar-terrain-shadows',SHADOW_VERSION=1;
 // Full 4 m source grid directional horizon sweep. Each pass is O(N²).
 // Intermediate ray horizons are linearly interpolated between adjacent scanlines.

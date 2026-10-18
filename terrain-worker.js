@@ -1,5 +1,6 @@
-import {N,STEP,HALF,clamp,smooth,copyRect} from './terrain-core.js';
-import {adaptiveTimes,sweepMask,makeShadowMeta,packShadows} from './shadow-core.js';
+import {N,STEP,HALF,clamp,smooth,copyRect} from './terrain-core.js?v=2.0.0';
+import {adaptiveTimes,sweepMask,makeShadowMeta,packShadows} from './shadow-core.js?v=2.0.0';
+import {capturePatch} from './selection-core.js?v=2.0.0';
 const pause=()=>new Promise(r=>setTimeout(r,0));
 function report(progress,message){self.postMessage({type:'progress',progress,message});}
 function curve(points,closed){let p=points.map(v=>[v.x,v.z]);for(let k=0;k<2;k++){const out=closed?[]:[p[0]];for(let i=0;i<p.length-(closed?0:1);i++){const a=p[i],b=p[(i+1)%p.length];out.push([a[0]*.75+b[0]*.25,a[1]*.75+b[1]*.25],[a[0]*.25+b[0]*.75,a[1]*.25+b[1]*.75]);}if(!closed)out.push(p.at(-1));p=out;}if(p.length>192){const stride=p.length/192;p=Array.from({length:192},(_,i)=>p[Math.floor(i*stride)]);}return p;}
@@ -34,4 +35,12 @@ async function bake({heights,resolution,heightHash}){
   }
   const meta=makeShadowMeta(resolution,samples,heightHash),data=packShadows(meta,frames);self.postMessage({type:'bake',data,meta},[data.buffer]);
 }
-self.onmessage=async({data})=>{try{if(data.type==='contour')await contour(data);else if(data.type==='bake')await bake(data);}catch(e){self.postMessage({type:'error',message:e.message});}};
+self.onmessage=async({data})=>{try{
+  if(data.type==='contour')await contour(data);
+  else if(data.type==='bake')await bake(data);
+  else if(data.type==='capture'){
+    report(.02,'Leyendo el área seleccionada…');await pause();
+    const patch=capturePatch(data.heights,data.points,p=>report(p,'Copiando alturas y borde…'));
+    self.postMessage({type:'capture',patch},[patch.mask.buffer,patch.delta.buffer,patch.edge.buffer]);
+  }else throw Error('Operación desconocida.');
+}catch(e){self.postMessage({type:'error',message:e.message});}};

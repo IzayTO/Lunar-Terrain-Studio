@@ -1,22 +1,212 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#10151c"><meta name="description" content="Escultor lunar libre de 4096 metros. Edición local, formato compatible con Sky Explorer y sombras precalculadas."><title>Lunar Terrain Studio</title><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css"></head>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111719"><meta name="description" content="Lunar Terrain Studio. Un taller de paisaje lunar: esculpe, compara escalas y prepara tu terreno para Sky Explorer.">
+<title>Lunar Terrain Studio · Taller 02</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="styles.css?v=2.0.0">
+</head>
 <body>
-<header class="topbar"><a class="brand" href="./" aria-label="Lunar Terrain Studio"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M27 18A12 12 0 0 1 14 5 12 12 0 1 0 27 18Z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m7 23 4-5 4 3 5-6 7 8" fill="none" stroke="currentColor"/></svg><span>LUNAR<small>TERRAIN STUDIO</small></span></a><div class="project-title"><span id="project-title">Terreno lunar</span><small id="save-state">Cargando original…</small></div><div class="historybar"><button id="undo" data-action="undo" title="Deshacer · Ctrl/⌘ Z" aria-label="Deshacer" disabled>↶</button><button id="redo" data-action="redo" title="Rehacer · Ctrl/⌘ Shift Z" aria-label="Rehacer" disabled>↷</button><button data-action="cancel" title="Cancelar operación · Esc" aria-label="Cancelar operación">×</button><button data-action="reset-view" title="Restablecer vista · 0" aria-label="Restablecer vista">⌖</button><button class="primary quick-save" data-action="save">Guardar</button></div></header>
-<main id="workspace"><canvas tabindex="0" id="viewport" aria-label="Terreno lunar editable en tres dimensiones"></canvas><div class="viewport-top"><div class="segmented modes"><button data-mode="navigate" class="active">Navegar</button><button data-mode="sculpt">Esculpir</button></div><span class="map-chip">4,096 × 4,096 m <i>•</i> <span id="view-name">Orbital</span></span></div><div id="compare-badge" hidden>VISTA DEL ORIGINAL · edición suspendida</div><div id="coordinate-readout">X — <span>Z —</span> <span>Altura —</span></div><div id="gesture-hint">Un dedo gira · Dos dedos desplazan y acercan</div><span id="render-info"></span></main>
-<nav class="tabs" aria-label="Paneles"><button data-tab="project"><span>▤</span>Proyecto</button><button data-tab="sculpt" class="active"><span>⌁</span>Esculpir</button><button data-tab="brush"><span>◯</span>Pincel</button><button data-tab="view"><span>◇</span>Vista</button><button data-tab="light"><span>☼</span>Iluminación</button><button data-tab="export"><span>↗</span>Exportar</button></nav>
-<aside id="inspector"><div class="panel-heading"><div><small>ESPACIO DE TRABAJO</small><h1 id="panel-title">Esculpir</h1></div><button data-action="hide-panel" aria-label="Cerrar panel" title="Cerrar panel">⌄</button></div>
-<section data-panel="project" hidden><label>Nombre del proyecto<input id="project-name" type="text" maxlength="70" value="Terreno lunar"></label><div class="button-grid"><button data-action="new">Nuevo</button><button data-action="open">Abrir</button><button data-action="save" class="primary">Guardar</button><button data-action="save-copy">Guardar copia</button></div><button class="wide" data-action="open">Importar proyecto</button><button class="wide" data-action="import-height">Importar PNG RG</button><div class="divider"></div><button class="wide" data-action="restore-original">Restaurar original completo</button><button id="compare" class="wide" data-action="compare">Comparar original</button><p class="note">El guardado automático es local a este navegador. Descarga el proyecto para conservarlo y abrirlo en otro dispositivo.</p><p id="original-info" class="technical">Original idéntico en VR y App · 1025² muestras</p></section>
-<section data-panel="sculpt"><p class="intro">Da forma al paisaje.<br><span>Traza, ajusta y vuelve a explorar.</span></p><div class="tools" role="group" aria-label="Herramientas"><button data-tool="raise" class="active"><b>↑</b><span>Elevar<small>Construye volumen</small></span></button><button data-tool="lower"><b>↓</b><span>Hundir<small>Abre depresiones</small></span></button><button data-tool="smooth"><b>≈</b><span>Suavizar<small>Mezcla pendientes</small></span></button><button data-tool="level"><b>═</b><span>Nivelar<small>Fija una altura</small></span></button><button data-tool="contour"><b>⌁</b><span>Contorno libre<small>Dibuja una forma</small></span></button><button data-tool="restore"><b>↺</b><span>Restaurar región<small>Recupera el original</small></span></button><button data-tool="select"><b>⌖</b><span>Seleccionar<small>Marca y centra un punto</small></span></button></div><p id="tool-help" class="note">Mantén presionado o arrastra para elevar suavemente.</p><button class="wide" data-action="brush-panel" data-tools="raise lower smooth level restore">Ajustar pincel →</button>
-<div data-tools="level" hidden><button class="wide" data-action="pick-height">Tomar altura del terreno</button></div>
-<div id="contour-controls" data-tools="contour" hidden><div class="divider"></div><label>Resultado<select id="contour-kind"><option value="mound">Montículo suave</option><option value="depression">Depresión</option><option value="crater">Cráter con borde</option><option value="basin">Cuenca</option><option value="channel">Canal sinuoso (trazo abierto)</option></select></label><label>Elevación / profundidad <output for="contour-amount">30 m</output><input id="contour-amount" type="range" min="1" max="160" step="1" value="30"></label><label>Transición del borde <output for="contour-edge">100 m</output><input id="contour-edge" type="range" min="8" max="600" step="4" value="100"></label><label id="rim-field" hidden>Borde elevado <output for="contour-rim">12 m</output><input id="contour-rim" type="range" min="0" max="80" step="1" value="12"></label><label id="channel-field" hidden>Anchura del canal <output for="contour-width">100 m</output><input id="contour-width" type="range" min="16" max="700" step="4" value="100"></label><p id="contour-message" class="note">Dibuja sobre el terreno. El contorno se cerrará y suavizará al soltar. Ajusta aquí la vista previa.</p><div class="button-grid"><button id="apply-contour" data-action="apply-contour" class="primary" disabled>Aplicar</button><button data-action="cancel">Cancelar</button></div></div></section>
-<section data-panel="brush" hidden><label data-tools="raise lower smooth level restore">Diámetro <output for="diameter">200 m</output><input id="diameter" type="range" min="16" max="1200" step="4" value="200"></label><label data-tools="raise lower smooth level restore">Fuerza <output for="force">8</output><input id="force" type="range" min=".5" max="50" step=".5" value="8"></label><label data-tools="raise">Altura máxima, en metros<input id="ceiling" type="number" min="-4096" max="4096" step="1" value="100"></label><label data-tools="lower" hidden>Altura mínima, en metros<input id="floor" type="number" min="-4096" max="4096" step="1" value="-100"></label><div data-tools="level" hidden><label>Altura objetivo, en metros<input id="target" type="number" min="-4096" max="4096" step=".1" value="0"></label><button class="wide" data-action="pick-height">Tomar altura del terreno</button></div><label data-tools="raise lower smooth level restore">Suavidad del borde <output for="falloff">100 %</output><input id="falloff" type="range" min=".12" max="1" step=".01" value="1"></label><label data-tools="raise lower smooth level restore">Forma<select id="shape"><option value="circle">Circular</option><option value="ellipse">Elíptica</option></select></label><div id="ellipse-fields" hidden><label>Proporción <output for="aspect">0.5</output><input id="aspect" type="range" min=".2" max="1" step=".05" value=".5"></label><label>Rotación <output for="angle">0°</output><input id="angle" type="range" min="0" max="180" step="1" value="0"></label></div><label data-tools="raise lower smooth level restore contour">Estabilización <output for="stabilize">30 %</output><input id="stabilize" type="range" min="0" max=".9" step=".05" value=".3"></label><label class="check" data-tools="raise lower"><input type="checkbox" id="accumulate" checked><span>Acumular al mantener presionado</span></label><p class="note">Un trazo equivale a un paso de Deshacer. La forma trabaja siempre a la resolución completa, incluso al alejar la cámara.</p></section>
-<section data-panel="view" hidden><label>Proyección</label><div class="button-grid"><button data-view="top">Superior</button><button data-view="side">Lateral</button><button data-view="orbit" class="active">Orbital</button><button data-action="reset-view">Restablecer</button></div><button class="wide" data-action="center-selection">Centrar selección · F</button><label class="check"><input id="grid" type="checkbox"><span>Cuadrícula · 100 m</span></label><label class="check"><input id="bounds" type="checkbox" checked><span>Límites y zona central del juego</span></label><p class="note">Mapa: X/Z de −2048 a +2048 m. La línea interior señala la zona central de mayor detalle de los juegos (±768 m).</p><div class="divider"></div><h2>Imagen de referencia</h2><button class="wide" data-action="reference">Importar imagen</button><div id="reference-fields" hidden><label class="check"><input id="ref-visible" type="checkbox" checked><span>Mostrar referencia</span></label><div class="button-grid"><label>Ancho (m)<input id="ref-width" type="number" value="1000" min="4" max="8192"></label><label>Alto (m)<input id="ref-height" type="number" value="1000" min="4" max="8192"></label><label>Posición X<input id="ref-x" type="number" value="0" min="-4096" max="4096"></label><label>Posición Z<input id="ref-z" type="number" value="0" min="-4096" max="4096"></label></div><label>Opacidad <output for="ref-opacity">55 %</output><input id="ref-opacity" type="range" min="0" max="1" step=".01" value=".55"></label><button class="wide" data-action="remove-reference">Quitar referencia</button></div><div class="divider"></div><button class="wide" data-action="help">Controles y ayuda</button></section>
-<section data-panel="light" hidden><h2>Un mismo ciclo lunar</h2><p class="note">Trayectoria original de Sky Explorer. La luz llega en rayos paralelos. El cielo permanece vacío.</p><label>Duración de una vuelta<select id="speed"><option value="600">10 minutos</option><option value="300">5 minutos</option><option value="120" selected>2 minutos</option><option value="60">1 minuto</option><option value="30">30 segundos</option></select></label><label>Sombras durante la edición<select id="live-quality"><option value="256">Ligera · 256</option><option value="512" selected>Equilibrada · 512</option><option value="1024">Alta · 1024</option></select></label><label>Luz de trabajo <output for="work-light">0 %</output><input id="work-light" type="range" min="0" max=".3" step=".01" value="0"></label><p class="note">Déjala en 0 para conservar la iluminación lunar. Puedes aumentarla temporalmente para esculpir de noche.</p><div class="divider"></div><h2>Sombras precalculadas</h2><label>Resolución exportada<select id="bake-resolution"><option value="257">Ligera · 16 m por muestra</option><option value="513" selected>Equilibrada · 8 m por muestra</option><option value="1025">Completa · 4 m por muestra</option></select></label><button id="bake" class="wide primary" data-action="bake">Calcular sombras</button><p id="bake-state" class="note">Sin calcular. El proceso incluye luz solar y terrestre, con más muestras cerca de amanecer y atardecer.</p><label class="check"><input id="preview-baked" type="checkbox" disabled><span>Ver sombras precalculadas</span></label></section>
-<section data-panel="export" hidden><div class="export-card"><small>TERRENO PARA SKY EXPLORER</small><h2>lunar-height.png</h2><p>1025 × 1025 · 16 bits en R/G<br>4096 metros · mismos ejes</p><button class="primary wide" data-action="export-height">Exportar terreno PNG</button></div><p id="height-range" class="note">Analizando alturas…</p><button class="wide" data-action="fix-range">Revisar / corregir rango</button><div class="divider"></div><h2>Datos de iluminación</h2><button class="wide" data-action="export-shadows">Exportar paquete de sombras</button><p class="note">Incluye datos binarios y el contrato solar. Requiere el adaptador separado en cada juego.</p><button class="wide" data-action="save">Descargar proyecto editable</button><button class="wide" data-action="integration">Preparar integración / actualizar caché</button></section>
+<svg class="icon-definitions" aria-hidden="true"><defs>
+<symbol id="i-raise" viewBox="0 0 24 24"><path d="M3 19q9-10 18 0M12 15V3m-4 4 4-4 4 4"/></symbol>
+<symbol id="i-lower" viewBox="0 0 24 24"><path d="M3 15q9 10 18 0M12 3v12m-4-4 4 4 4-4"/></symbol>
+<symbol id="i-smooth" viewBox="0 0 24 24"><path d="M3 7q4-4 9 0t9 0M3 12q4-4 9 0t9 0M3 17q4-4 9 0t9 0"/></symbol>
+<symbol id="i-flat" viewBox="0 0 24 24"><path d="M3 18h18M12 3v10m-4-4 4 4 4-4M4 22h16"/></symbol>
+<symbol id="i-lasso" viewBox="0 0 24 24"><path d="M7 18C0 16 3 4 12 4s12 9 5 13c-4 3-12 3-11 0s5-2 4 1-5 6-7 3" stroke-dasharray="3 2"/></symbol>
+<symbol id="i-point" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><path d="M12 2v6m0 8v6M2 12h6m8 0h6"/></symbol>
+<symbol id="i-contour" viewBox="0 0 24 24"><path d="M3 15C1 9 7 3 13 5s5 6 8 9-6 9-10 6-6-1-8-5Z"/></symbol>
+<symbol id="i-restore" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 1 8M3 4v7h7"/></symbol>
+<symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M15 8V3H3v13h5"/></symbol>
+<symbol id="i-paste" viewBox="0 0 24 24"><path d="M8 4H4v17h16V4h-4M9 12h6m-3-3v6"/><rect x="8" y="2" width="8" height="5" rx="1"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M9 3v18m6-18v18M3 9h18M3 15h18"/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18M8 3v6m8 0v6m-6 0v6"/></symbol>
+</defs></svg>
+<header class="topbar">
+<a class="brand" href="./" aria-label="Lunar Terrain Studio"><svg viewBox="0 0 34 34" aria-hidden="true"><path d="M28 19A12 12 0 0 1 15 6 12 12 0 1 0 28 19Z"/><path d="m7 25 5-7 4 4 5-8 7 11"/></svg><span>LUNAR<small>TERRAIN STUDIO</small></span><em>02</em></a>
+<div class="project-title"><span id="project-title">Terreno lunar</span><small id="save-state">Preparando taller…</small></div>
+<div class="historybar">
+<button id="undo" data-action="undo" title="Deshacer · Ctrl/⌘ Z" aria-label="Deshacer" disabled>↶</button>
+<button id="redo" data-action="redo" title="Rehacer · Ctrl/⌘ Shift Z" aria-label="Rehacer" disabled>↷</button>
+<span class="toolbar-divider"></span><button data-action="cancel" title="Cancelar operación · Esc" aria-label="Cancelar operación">×</button>
+<button data-action="reset-view" title="Restablecer vista · 0" aria-label="Restablecer vista"><svg class="icon"><use href="#i-point"/></svg></button>
+<button data-action="help" class="help-button" title="Atajos y controles · ?" aria-label="Atajos y controles">?</button>
+<button class="primary quick-save" data-action="save">Guardar <kbd>⌘ S</kbd></button>
+</div></header>
+<main id="workspace">
+<canvas tabindex="0" id="viewport" aria-label="Terreno lunar editable en tres dimensiones"></canvas>
+<div class="viewport-top">
+<div class="segmented modes"><button data-mode="navigate" class="active">Navegar <kbd>N</kbd></button><button data-mode="sculpt">Esculpir <kbd>B</kbd></button></div>
+<span class="map-chip"><i></i> 4096 × 4096 m <span id="view-name">Orbital</span></span>
+<div class="view-shortcuts"><button data-view="top" title="Vista superior · 7">Arriba</button><button data-view="side" title="Vista lateral · 1">Lado</button><button data-view="orbit" title="Vista orbital">Órbita</button><button data-action="toggle-grid" aria-label="Alternar cuadrícula" title="Cuadrícula · G"><svg class="icon"><use href="#i-grid"/></svg></button></div>
+</div>
+<div id="compare-badge" hidden>ORIGINAL · EDICIÓN EN PAUSA</div>
+<div class="brush-dock" aria-label="Herramientas y propiedades rápidas">
+<div class="dock-tools">
+<button data-tool="raise" class="active" title="Elevar · R" aria-label="Elevar"><svg class="icon"><use href="#i-raise"/></svg><span>Elevar</span></button>
+<button data-tool="lower" title="Hundir · D" aria-label="Hundir"><svg class="icon"><use href="#i-lower"/></svg><span>Hundir</span></button>
+<button data-tool="smooth" title="Suavizar · S / mantener Shift" aria-label="Suavizar"><svg class="icon"><use href="#i-smooth"/></svg><span>Suavizar</span></button>
+<button data-tool="flatten" title="Aplanar · L" aria-label="Aplanar"><svg class="icon"><use href="#i-flat"/></svg><span>Aplanar</span></button>
+<span class="toolbar-divider"></span>
+<button data-tool="lasso" title="Selección libre · A" aria-label="Selección libre"><svg class="icon"><use href="#i-lasso"/></svg><span>Área</span></button>
+<button id="quick-copy" data-action="copy-area" title="Copiar relieve · Ctrl/⌘ C" aria-label="Copiar relieve" disabled><svg class="icon"><use href="#i-copy"/></svg><span>Copiar</span></button>
+<button id="quick-paste" data-action="paste-area" title="Pegar relieve · Ctrl/⌘ V" aria-label="Pegar relieve" disabled><svg class="icon"><use href="#i-paste"/></svg><span>Pegar</span></button>
+<button id="quick-properties-toggle" data-action="quick-properties" aria-expanded="false" aria-controls="quick-properties" title="Más propiedades rápidas"><svg class="icon"><use href="#i-sliders"/></svg><span>Ajustes</span></button>
+</div>
+<div class="dock-properties">
+<span id="quick-tool-name">Elevar</span>
+<label class="quick-range">Tamaño <output id="quick-diameter-value">200 m</output><input data-brush="diameter" type="range" min="16" max="1200" step="4" value="200" aria-label="Tamaño rápido del pincel"></label>
+<label class="quick-range" id="force-quick">Fuerza <output id="quick-force-value">8.0</output><input data-brush="force" type="range" min=".5" max="50" step=".5" value="8" aria-label="Fuerza rápida del pincel"></label>
+<label id="target-quick" class="quick-number" hidden>Cota m<input data-brush="target" type="number" min="-4096" max="4096" step=".1" value="0" aria-label="Altura de aplanado"></label>
+<button data-action="invert-brush" class="invert-button" title="Invertir elevar / hundir · X" aria-label="Invertir elevar y hundir">⇅</button>
+</div>
+</div>
+<div id="quick-properties" class="floating-properties" hidden>
+<div class="section-title"><span>Ajustes al vuelo</span><button data-action="quick-properties" aria-label="Cerrar ajustes rápidos">×</button></div>
+<label>Mi pincel<select id="quick-presets" data-presets aria-label="Elegir pincel guardado"><option value="">Mis pinceles…</option></select></label>
+<div class="button-grid"><label>Forma<select data-brush="shape"><option value="circle">Círculo</option><option value="square">Cuadrado</option><option value="ellipse">Elipse</option></select></label><label>Tamaño · m<input data-brush="diameter" type="number" min="16" max="1200" step="4" value="200"></label></div>
+<label>Suavidad del borde<input data-brush="falloff" type="range" min=".12" max="1" step=".01" value=".7"></label>
+<label class="check"><input data-brush="multiple" type="checkbox"><span>Usar mis huellas múltiples</span></label>
+<button data-action="brush-panel" class="wide quiet">Editar pincel completo →</button>
+</div>
+<div id="operation-bar" hidden><span id="paste-summary">Elige el destino</span><button id="quick-apply-paste" class="primary" data-action="apply-paste">Aplicar</button><button data-action="cancel">Cancelar</button></div>
+<div class="viewport-footer"><div id="coordinate-readout">X — <span>Z —</span> <span>Altura —</span></div><span id="render-info"></span></div>
+<div id="gesture-hint">Un dedo gira · Dos dedos desplazan y acercan</div>
+</main>
+<nav class="tabs" aria-label="Paneles">
+<button data-tab="project"><span>▤</span>Proyecto</button><button data-tab="sculpt" class="active"><span>⌁</span>Esculpir</button><button data-tab="brush"><span>◌</span>Pincel</button><button data-tab="view"><span>◇</span>Vista</button><button data-tab="light"><span>☼</span>Luz</button><button data-tab="export"><span>↗</span>Exportar</button>
+</nav>
+<aside id="inspector">
+<div class="panel-heading"><div><small>TALLER DE PAISAJE / 02</small><h1 id="panel-title">Esculpir</h1></div><button data-action="hide-panel" aria-label="Cerrar panel" title="Ocultar panel · Tab">‹</button></div>
+<section data-panel="project" hidden>
+<p class="intro">Tu paisaje, a tu ritmo.<span>Guarda el trabajo y vuelve cuando quieras.</span></p>
+<label>Nombre del proyecto<input id="project-name" type="text" maxlength="70" value="Terreno lunar"></label>
+<div class="button-grid"><button data-action="new">Nuevo</button><button data-action="open">Abrir <kbd>⌘ O</kbd></button><button data-action="save" class="primary">Guardar</button><button data-action="save-copy">Guardar copia</button></div>
+<details class="fold"><summary>Importar y recuperar</summary><div class="fold-content"><button class="wide" data-action="open">Importar proyecto</button><button class="wide" data-action="import-height">Importar PNG RG</button><button class="wide" data-action="restore-original">Restaurar original completo</button><button id="compare" class="wide" data-action="compare">Comparar original</button></div></details>
+<p class="note">El guardado automático es local a este navegador. Descarga tu proyecto para conservarlo o cambiar de dispositivo.</p><p id="original-info" class="technical">Original idéntico en VR y App · 1025² muestras</p>
+</section>
+<section data-panel="sculpt">
+<p class="intro">Dale forma al silencio.<span>Grandes formas. Transiciones naturales.</span></p>
+<div class="tools" role="group" aria-label="Herramientas de terreno">
+<button data-tool="raise" class="active"><svg class="icon"><use href="#i-raise"/></svg><span>Elevar<small>Añadir volumen</small></span><kbd>R</kbd></button>
+<button data-tool="lower"><svg class="icon"><use href="#i-lower"/></svg><span>Hundir<small>Crear depresiones</small></span><kbd>D</kbd></button>
+<button data-tool="smooth"><svg class="icon"><use href="#i-smooth"/></svg><span>Suavizar<small>Unir pendientes</small></span><kbd>S</kbd></button>
+<button data-tool="flatten"><svg class="icon"><use href="#i-flat"/></svg><span>Aplanar<small>Plano al pasar</small></span><kbd>L</kbd></button>
+<button data-tool="level"><b>═</b><span>Nivelar<small>Aproximar a una cota</small></span></button>
+<button data-tool="contour"><svg class="icon"><use href="#i-contour"/></svg><span>Contorno<small>Dibujar una forma</small></span><kbd>C</kbd></button>
+<button data-tool="restore"><svg class="icon"><use href="#i-restore"/></svg><span>Restaurar<small>Recuperar región</small></span></button>
+<button data-tool="select"><svg class="icon"><use href="#i-point"/></svg><span>Punto<small>Seleccionar y centrar</small></span><kbd>V</kbd></button>
+<button data-tool="lasso" class="tool-wide"><svg class="icon"><use href="#i-lasso"/></svg><span>Selección libre<small>Copiar un fragmento del paisaje</small></span><kbd>A</kbd></button>
+</div>
+<p id="tool-help" class="note">Mantén presionado o arrastra para elevar suavemente.</p>
+<button class="wide" data-action="brush-panel" data-tools="raise lower smooth level flatten restore">Ajustar pincel →</button>
+<div data-tools="level flatten" hidden><button class="wide" data-action="pick-height">Tomar altura del terreno <kbd>Alt + clic</kbd></button></div>
+<details class="fold" open><summary>Copiar y colocar relieve</summary><div class="fold-content">
+<p id="selection-status" class="note">Dibuja un contorno con Selección libre.</p>
+<div class="button-grid"><button id="copy-area" data-action="copy-area" disabled>Copiar <kbd>⌘ C</kbd></button><button id="paste-area" data-action="paste-area" disabled>Pegar <kbd>⌘ V</kbd></button></div>
+<button data-action="clear-area" class="wide quiet">Quitar selección</button>
+<div id="paste-controls" hidden><label>Transición del borde <output id="paste-feather-value">12 m</output><input id="paste-feather" type="range" min="0" max="100" step="4" value="12"></label><button class="wide" data-action="rotate-paste">Girar copia 90° <kbd>Q / E</kbd></button><div class="button-grid"><button id="apply-paste" data-action="apply-paste" class="primary" disabled>Aplicar copia</button><button data-action="cancel">Cancelar</button></div><p class="note">Solo se permite pegar sobre terreno horizontal. La altura de la copia se adapta al plano de destino.</p></div>
+</div></details>
+<div id="contour-controls" data-tools="contour" hidden><div class="divider"></div>
+<label>Resultado<select id="contour-kind"><option value="mound">Montículo suave</option><option value="depression">Depresión</option><option value="crater">Cráter con borde</option><option value="basin">Cuenca</option><option value="channel">Canal sinuoso (abierto)</option></select></label>
+<label>Elevación / profundidad <output for="contour-amount">30 m</output><input id="contour-amount" type="range" min="1" max="160" step="1" value="30"></label>
+<label>Transición del borde <output for="contour-edge">100 m</output><input id="contour-edge" type="range" min="8" max="600" step="4" value="100"></label>
+<label id="rim-field" hidden>Borde elevado <output for="contour-rim">12 m</output><input id="contour-rim" type="range" min="0" max="80" step="1" value="12"></label>
+<label id="channel-field" hidden>Anchura del canal <output for="contour-width">100 m</output><input id="contour-width" type="range" min="16" max="700" step="4" value="100"></label>
+<p id="contour-message" class="note">Dibuja sobre el terreno. Ajusta la vista previa antes de aplicar.</p><div class="button-grid"><button id="apply-contour" data-action="apply-contour" class="primary" disabled>Aplicar</button><button data-action="cancel">Cancelar</button></div></div>
+</section>
+<section data-panel="brush" hidden>
+<label>Mi colección<select id="saved-brushes" data-presets><option value="">Mis pinceles…</option></select></label>
+<div class="button-grid"><button data-action="save-brush" class="primary">Guardar pincel</button><button data-action="delete-brush">Eliminar guardado</button></div>
+<label>Diámetro <output for="diameter">200 m</output><input id="diameter" type="range" min="16" max="1200" step="4" value="200"></label>
+<label data-tools="raise lower smooth level restore">Fuerza <output for="force">8</output><input id="force" type="range" min=".5" max="50" step=".5" value="8"></label>
+<div class="button-grid">
+<label>Forma<select id="shape"><option value="circle">Circular</option><option value="square">Cuadrada</option><option value="ellipse">Elíptica</option></select></label>
+<label>Giro <output for="angle">0°</output><input id="angle" type="range" min="0" max="360" step="1" value="0"></label></div>
+<div id="ellipse-fields" hidden><label>Proporción <output for="aspect">0.5</output><input id="aspect" type="range" min=".2" max="1" step=".05" value=".5"></label></div>
+<label>Suavidad del borde <output for="falloff">70 %</output><input id="falloff" type="range" min=".12" max="1" step=".01" value=".7"></label>
+<div data-tools="flatten" hidden><label>Cota del aplanador<select data-brush="flattenSource"><option value="target">Altura fija indicada abajo</option><option value="touch">Tomar la altura al iniciar cada trazo</option></select></label><p class="note">Aplana al pasar. El centro queda horizontal; el borde mezcla la transición.</p></div>
+<div data-tools="level flatten" hidden><label>Altura objetivo · m<input id="target" type="number" min="-4096" max="4096" step=".1" value="0"></label><button class="wide" data-action="pick-height">Tomar altura <kbd>Alt + clic</kbd></button></div>
+<label data-tools="raise">Altura máxima · m<input id="ceiling" type="number" min="-4096" max="4096" step="1" value="100"></label>
+<label data-tools="lower" hidden>Altura mínima · m<input id="floor" type="number" min="-4096" max="4096" step="1" value="-100"></label>
+<details class="fold" open><summary>Huellas múltiples <span id="nib-count-label">5 huellas</span></summary><div class="fold-content">
+<label class="check"><input id="multiple" type="checkbox"><span>Activar pincel compuesto</span></label>
+<div id="multiple-editor" hidden>
+<p class="note">Arrastra los círculos para distribuirlos. Todas las huellas actúan juntas. «Seguir herramienta» permite elevarlas o hundirlas con X.</p>
+<canvas id="pattern-canvas" width="320" height="320" aria-label="Distribución editable de las huellas del pincel"></canvas>
+<div class="button-grid"><label>Cantidad<select id="nib-count"><option>3</option><option selected>5</option><option>7</option><option>9</option><option>12</option><option>16</option></select></label><button data-action="distribute-nibs">Redistribuir</button></div>
+<div class="button-grid"><button data-action="add-nib">Añadir huella</button><button data-action="remove-nib">Quitar huella</button></div>
+<div class="nib-properties"><strong id="nib-selected">Huella 1 de 5</strong>
+<label>Tamaño relativo<input id="nib-size" type="range" min=".08" max="1" step=".01" value=".22"></label>
+<label>Fuerza relativa<input id="nib-weight" type="range" min=".1" max="2" step=".05" value="1"></label>
+<label>Comportamiento<select id="nib-effect"><option value="inherit">Seguir herramienta activa</option><option value="raise">Siempre elevar</option><option value="lower">Siempre hundir</option></select></label></div>
+<p class="note">Puedes superponer una huella grande que eleva y otra menor que hunde para diseñar tu propio cráter.</p>
+</div></div></details>
+<details class="fold"><summary>Trazo y colección</summary><div class="fold-content">
+<label>Estabilización <output for="stabilize">25 %</output><input id="stabilize" type="range" min="0" max=".9" step=".05" value=".25"></label>
+<label class="check" data-tools="raise lower"><input type="checkbox" id="accumulate" checked><span>Acumular al mantener presionado</span></label>
+<div class="button-grid"><button data-action="export-brushes">Exportar pinceles</button><button data-action="import-brushes">Importar pinceles</button></div>
+</div></details><p class="note">Un trazo = un paso de Deshacer. Tus pinceles se guardan localmente y dentro del proyecto.</p>
+</section>
+<section data-panel="view" hidden>
+<label>Perspectiva</label><div class="button-grid"><button data-view="top">Superior <kbd>7</kbd></button><button data-view="side">Lateral <kbd>1</kbd></button><button data-view="orbit" class="active">Orbital</button><button data-action="reset-view">Restablecer <kbd>0</kbd></button></div>
+<button class="wide" data-action="center-selection">Centrar selección <kbd>F</kbd></button>
+<details class="fold" open><summary>Escala real <kbd>H</kbd></summary><div class="fold-content">
+<label class="check"><input id="guide-human" type="checkbox"><span>Fantasma humano<small>Altura de ojos configurable</small></span></label>
+<label class="check"><input id="guide-rover" type="checkbox"><span>Fantasma del rover<small>≈ 2,9 m de largo · antena ≈ 2,38 m</small></span></label>
+<label class="check"><input id="guide-panel" type="checkbox"><span>Panel de pared<small>4 m de ancho × 2,8 m de alto</small></span></label>
+<div class="button-grid"><button data-action="place-guides" class="primary">Colocar en terreno</button><button data-action="focus-guides">Ver de cerca</button></div>
+<button class="wide quiet" data-action="guides-at-selection">Llevar a la selección</button>
+<p id="reference-status" class="note">Activa una figura y colócala junto al relieve.</p>
+<div class="button-grid"><label>Ojos · m<input id="guide-eyeHeight" type="number" min=".8" max="2.3" step=".01" value="1.68"></label><label>Giro · grados<input id="guide-angle" type="number" min="0" max="360" step="15" value="0"></label></div>
+<label>Transparencia de las figuras<input id="guide-opacity" type="range" min=".08" max=".7" step=".01" value=".24"></label>
+<p class="note">En VR de pie, la vista depende de la altura real de tu visor. 1,68 m es la referencia base. Las figuras son ayudas y no se exportan.</p>
+</div></details>
+<details class="fold" open><summary>Cuadrícula y límites</summary><div class="fold-content">
+<label class="check"><input id="grid" type="checkbox"><span>Cuadrícula métrica <kbd>G</kbd></span></label>
+<label>Separación<select id="grid-step"><option value="4">4 m · una muestra</option><option value="10">10 m</option><option value="25">25 m</option><option value="50">50 m</option><option value="100" selected>100 m</option><option value="250">250 m</option></select></label>
+<label class="check"><input id="guide-spawn" type="checkbox" checked><span>Centro de aparición<small>X = 0 · Z = 0</small></span></label>
+<label class="check"><input id="guide-player" type="checkbox" checked><span>Círculo explorable del jugador<small>Radio 600 m · diámetro 1200 m</small></span></label>
+<label class="check"><input id="guide-detail" type="checkbox"><span>Zona central de detalle<small>Cuadrado de ±768 m; no es el límite del jugador</small></span></label>
+<label class="check"><input id="bounds" type="checkbox" checked><span>Borde del mapa<small>X/Z de −2048 a +2048 m</small></span></label>
+<button class="wide" data-action="focus-spawn">Centrar punto de aparición</button>
+<p class="note">Estos indicadores reflejan los límites del juego revisado. Mostrar un círculo no modifica la distancia que permite recorrer Sky Explorer.</p>
+</div></details>
+<details class="fold"><summary>Imagen de referencia</summary><div class="fold-content">
+<button class="wide" data-action="reference">Importar imagen</button><div id="reference-fields" hidden>
+<label class="check"><input id="ref-visible" type="checkbox" checked><span>Mostrar referencia</span></label>
+<div class="button-grid"><label>Ancho · m<input id="ref-width" type="number" value="1000" min="4" max="8192"></label><label>Alto · m<input id="ref-height" type="number" value="1000" min="4" max="8192"></label><label>Posición X<input id="ref-x" type="number" value="0" min="-4096" max="4096"></label><label>Posición Z<input id="ref-z" type="number" value="0" min="-4096" max="4096"></label></div>
+<label>Opacidad <output for="ref-opacity">55 %</output><input id="ref-opacity" type="range" min="0" max="1" step=".01" value=".55"></label><button class="wide" data-action="remove-reference">Quitar referencia</button></div></div></details>
+<button class="wide quiet" data-action="help">Ver controles y atajos <kbd>?</kbd></button>
+</section>
+<section data-panel="light" hidden>
+<p class="intro">La luz cuenta el relieve.<span>El mismo ciclo de Sky Explorer.</span></p>
+<label>Duración de una vuelta<select id="speed"><option value="600">10 minutos</option><option value="300">5 minutos</option><option value="120" selected>2 minutos</option><option value="60">1 minuto</option><option value="30">30 segundos</option></select></label>
+<label>Sombras durante la edición<select id="live-quality"><option value="256">Ligera · 256</option><option value="384">Móvil · 384</option><option value="512" selected>Equilibrada · 512</option><option value="1024">Alta · 1024</option></select></label>
+<label>Luz de trabajo <output for="work-light">0 %</output><input id="work-light" type="range" min="0" max=".3" step=".01" value="0"></label>
+<p class="note">Déjala en 0 para conservar la iluminación lunar. Auméntala temporalmente para esculpir de noche.</p>
+<details class="fold" open><summary>Sombras precalculadas</summary><div class="fold-content">
+<label>Resolución exportada<select id="bake-resolution"><option value="257">Ligera · 16 m por muestra</option><option value="513" selected>Equilibrada · 8 m por muestra</option><option value="1025">Completa · 4 m por muestra</option></select></label>
+<button id="bake" class="wide primary" data-action="bake">Calcular sombras</button><p id="bake-state" class="note">Sin calcular. Incluye luz solar y terrestre, con más muestras cerca del amanecer y atardecer.</p>
+<label class="check"><input id="preview-baked" type="checkbox" disabled><span>Ver sombras precalculadas</span></label></div></details>
+</section>
+<section data-panel="export" hidden>
+<div class="export-card"><small>TERRENO / SKY EXPLORER</small><h2>lunar-height.png</h2><p>1025 × 1025 · 16 bits en R/G<br>4096 metros · mismos ejes y escala</p><button class="primary wide" data-action="export-height">Exportar terreno PNG ↗</button></div>
+<p id="height-range" class="note">Analizando alturas…</p><button class="wide" data-action="fix-range">Revisar / corregir rango</button>
+<details class="fold" open><summary>Iluminación e integración</summary><div class="fold-content"><button class="wide" data-action="export-shadows">Exportar paquete de sombras</button><p class="note">Incluye los datos de sombra y el ciclo solar. Requiere el adaptador separado en cada juego.</p><button class="wide" data-action="integration">Asistente de integración</button></div></details>
+<button class="wide" data-action="save">Descargar proyecto editable</button>
+</section>
 </aside>
-<div class="cyclebar"><div class="cycle-text"><strong id="cycle-percent">35.0 %</strong><span id="earth-phase">Fase terrestre</span></div><div class="playback"><button data-action="back" title="Retroceder 0.5 %" aria-label="Retroceder medio por ciento">−</button><button id="play" data-action="play" title="Reproducir ciclo" aria-label="Reproducir ciclo">▶</button><button data-action="forward" title="Avanzar 0.5 %" aria-label="Avanzar medio por ciento">+</button></div><input id="cycle" aria-label="Porcentaje del ciclo lunar" type="range" min="0" max="24" step=".001" value="8.4"><span class="cycle-end">CICLO LUNAR</span></div>
-<div id="progress-card" hidden><div><strong id="progress-title">Calculando…</strong><button data-action="cancel" aria-label="Cancelar cálculo">×</button></div><progress id="progress" max="1" value="0"></progress><small id="progress-text">Preparando</small></div>
-<div id="recovery" hidden><p>Hay un proyecto guardado automáticamente.</p><button data-action="recover" class="primary">Recuperar</button><button data-action="dismiss-recovery">Empezar con el original</button></div><div id="toast" role="status" aria-live="polite"></div><div id="loading"><div class="loading-moon">◔</div><strong>Lunar Terrain Studio</strong><span id="loading-text">Preparando el terreno original…</span></div>
+<div class="cyclebar">
+<div class="cycle-text"><small>CICLO LUNAR</small><strong id="cycle-percent">35.0 %</strong><span id="earth-phase">Fase terrestre</span></div>
+<div class="playback"><button data-action="back" title="Retroceder 0.5 %" aria-label="Retroceder">−</button><button id="play" data-action="play" title="Reproducir / pausar" aria-label="Reproducir ciclo">▶</button><button data-action="forward" title="Avanzar 0.5 %" aria-label="Avanzar">+</button></div>
+<input id="cycle" aria-label="Porcentaje del ciclo lunar" type="range" min="0" max="24" step=".001" value="8.4"><span class="cycle-end">29,53 DÍAS TERRESTRES</span>
+</div>
+<div id="progress-card" hidden><div><strong id="progress-title">Calculando…</strong><button data-action="cancel" aria-label="Cancelar cálculo">×</button></div><progress id="progress" max="1" value="0"></progress><small id="progress-text">Preparando…</small></div>
+<div id="recovery" hidden><span class="eyebrow">CONTINUAR EL PAISAJE</span><p>Hay un proyecto guardado automáticamente.</p><button data-action="recover" class="primary">Recuperar proyecto</button><button data-action="dismiss-recovery">Empezar con el original</button></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<div id="loading"><div class="loading-moon">◔</div><strong>Lunar Terrain Studio</strong><span id="loading-text">Preparando el terreno original…</span></div>
 <dialog id="dialog"><div class="dialog-head"><h2 id="dialog-title"></h2><button data-action="close-dialog" aria-label="Cerrar">×</button></div><div id="dialog-content"></div><div id="dialog-actions"></div></dialog>
-<input id="file-input" type="file" hidden><input id="image-input" type="file" accept="image/*" hidden>
-<script type="module">import("./app.js").catch(error=>{document.getElementById("loading-text").textContent="No se pudieron cargar los archivos del editor. Sube todos los archivos sueltos y abre el enlace de GitHub Pages. Detalle: "+error.message;});</script><noscript>Activa JavaScript para utilizar Lunar Terrain Studio.</noscript></body></html>
+<input id="file-input" type="file" hidden><input id="image-input" type="file" accept="image/*" hidden><input id="brush-file" type="file" accept=".json,application/json,text/plain" hidden>
+<script type="module">import("./app.js?v=2.0.0").catch(error=>{document.getElementById("loading-text").textContent="No se pudo abrir el editor. Comprueba que has subido todos los archivos. Detalle: "+error.message;});</script>
+<noscript>Activa JavaScript para utilizar Lunar Terrain Studio.</noscript>
+</body></html>

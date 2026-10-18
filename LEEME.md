@@ -1,10 +1,12 @@
-# Lunar Terrain Studio 1.0.0
+# Lunar Terrain Studio 2.0.0
 
 Editor independiente de terreno lunar para Sky Explorer. Todos los archivos de esta entrega están en la raíz. No requiere npm, compilación, cuentas adicionales ni conexiones a los juegos mientras editas. Three.js y la compresión ZIP vienen incluidos; no usa CDN en ejecución.
 
+**Si ya tienes el editor publicado:** abre `ACTUALIZAR.md`. Esta actualización se sube al mismo repositorio Lunar-Terrain-Studio; no requiere otro repositorio ni cambios en los juegos.
+
 ## 1. Publicarlo desde el iPhone
 
-1. Descarga `Lunar-Terrain-Studio.zip`. En **Archivos → Descargas**, toca el ZIP para descomprimirlo y entra en la carpeta que crea iOS.
+1. Descarga `Lunar-Terrain-Studio-2.0.zip`. En **Archivos → Descargas**, toca el ZIP para descomprimirlo y entra en la carpeta que crea iOS.
 2. Abre GitHub en Safari. Crea un repositorio nuevo **público**, por ejemplo `Lunar-Terrain-Studio`. Puedes marcar «Add a README file» para inicializar `main`.
 3. En el repositorio, pulsa **Add file → Upload files → choose your files**. En Archivos, entra en la carpeta descomprimida y selecciona **los archivos**, no la carpeta ni el ZIP. Sube todos y pulsa **Commit changes**. Si no aparece el botón, activa «Solicitar sitio web de escritorio» en Safari.
 4. En **Settings → Pages**, elige **Deploy from a branch**, rama **main**, carpeta **/(root)** y pulsa **Save**.
@@ -35,16 +37,22 @@ El proyecto guarda alturas Float32, cámara, pincel, configuración del contorno
 | Teléfono / Esculpir | Un dedo esculpe; al entrar el segundo se revierte el trazo activo y empieza la navegación |
 | Teléfono tras dos dedos | Levanta ambos antes de iniciar otro trazo |
 | Ratón | Izquierdo esculpe; derecho gira; central desplaza; rueda hace zoom |
-| Ratón con Mayúsculas | Izquierdo desplaza |
+| Ratón + Espacio | Izquierdo desplaza |
+| Mantener Mayúsculas | Suaviza temporalmente mientras esculpes |
+| Mantener Ctrl/⌘ | Invierte temporalmente elevar/hundir en huellas que siguen la herramienta |
 | Teclado | Ctrl/⌘ Z deshace; Ctrl/⌘ Shift Z o Ctrl Y rehace; Ctrl/⌘ S guarda |
 | Teclado | Esc cancela; 0 restablece; F centra selección; N navega; B esculpe |
 | Teclado | [ / ] cambian diámetro; flechas desplazan; + / − hacen zoom |
 
-**Vista** incluye superior, lateral y orbital, centrar selección, cuadrícula de 100 m, límites e imagen de referencia con tamaño, posición y opacidad. La referencia se adapta a un máximo de 2048 píxeles para controlar el consumo de memoria. Las coordenadas y altura se leen al tocar o pasar el puntero.
+**Vista** incluye superior, lateral y orbital, centrar selección, cuadrícula configurable (4, 10, 25, 50, 100 o 250 m), límites e imagen de referencia con tamaño, posición y opacidad. La referencia se adapta a un máximo de 2048 píxeles para controlar el consumo de memoria. Las coordenadas y altura se leen al tocar o pasar el puntero.
 
-El cuadrado interior de ±768 m señala la zona central detallada de los juegos; todo el mapa de ±2048 m es editable. El editor reduce triángulos a distancia, pero selecciona y modifica la rejilla completa. Las mallas y normales sólo se recalculan en las regiones afectadas.
+El centro de aparición es X = 0, Z = 0. El círculo explorable del jugador tiene radio 600 m. Son indicadores independientes y conmutables en Vista. El cuadrado interior de ±768 m señala la zona central detallada de los juegos; todo el mapa de ±2048 m es editable. El editor reduce triángulos a distancia, pero selecciona y modifica la rejilla completa. Las mallas y normales sólo se recalculan en las regiones afectadas.
 
 La barra inferior muestra porcentaje del ciclo y fase terrestre. Usa reproducir/pausar o los botones −/+ para avanzar 0.5 %. En **Iluminación** cambia la velocidad. La fuente solar es invisible en todas las vistas. La trayectoria y el aporte terrestre son los del juego; el material del editor es deliberadamente sencillo y sin microtexturas.
+
+## Referencias, aplanador, selección libre y pinceles personales
+
+Consulta `ACTUALIZAR.md` para el uso paso a paso de las nuevas herramientas y los atajos. Las figuras de escala, su ubicación, los ajustes de cuadrícula, la selección libre y los pinceles guardados se conservan en el proyecto. El portapapeles de relieve es temporal: vuelve a copiar la selección al abrir un proyecto.
 
 ## 4. Exportar el terreno a VR y App
 
@@ -82,6 +90,10 @@ El formato completo, la precisión del barrido, sus límites y la integración c
 
 - `terrain-core.js`: rejilla, pinceles, historial y selección exacta por triángulos.
 - `view.js`: visualización Three.js, niveles de detalle y sombras en vivo.
+- `brush-kit.js`: pinceles compuestos y colecciones.
+- `selection-core.js`: captura de áreas, verificación de destinos planos y pegado reversible.
+- `scene-guides.js`: figuras de escala e indicadores del mundo.
+- `studio-tools.js`: herramientas nuevas y accesos rápidos.
 - `controls.js`: navegación y separación de gestos.
 - `solar.js`: contrato solar original.
 - `terrain-worker.js`, `shadow-core.js`: contornos, precálculo, contenedores y muestreo.

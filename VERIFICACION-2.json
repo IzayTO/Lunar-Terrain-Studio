@@ -1,0 +1,128 @@
+{
+  "version": "2.0.0",
+  "verifiedAt": "2026-10-18",
+  "source": {
+    "repository": "https://github.com/IzayTO/Lunar-Terrain-Studio",
+    "baseCommit": "e53381dc225748ac95dd1e21e3138acd6d0f518d",
+    "gameReferenceFiles": [
+      "Sky-Explorer-VR/controls.js",
+      "Sky-Explorer-VR/vr-runtime.js",
+      "Sky-Explorer-VR/items.js",
+      "Sky-Explorer-VR/vehicle-models.js"
+    ],
+    "originalPNGUnchanged": true
+  },
+  "newFeatureTests": [
+    {
+      "test": "Circle/square flatten: fixed altitude, unchanged flat samples, exact undo/redo/cancel",
+      "status": "PASS",
+      "ms": 64
+    },
+    {
+      "test": "Interpolated square flatten covers a diagonal route without holes",
+      "status": "PASS",
+      "ms": 35
+    },
+    {
+      "test": "Compound nibs share one undo operation; stable layout, mixed signs and footprint spacing",
+      "status": "PASS",
+      "ms": 5
+    },
+    {
+      "test": "Free selection, flat-only paste, 90° orientation, rejection is atomic, reversible",
+      "status": "PASS",
+      "ms": 20
+    },
+    {
+      "test": "Metric ghost geometry: human height, rover wheel track/antenna, wall size",
+      "status": "PASS",
+      "ms": 28
+    },
+    {
+      "test": "Old and v2 project ZIPs preserve full heights, guides, selection, presets and compound brushes",
+      "status": "PASS",
+      "ms": 389
+    },
+    {
+      "test": "PNG compatibility after sculpt/flatten/paste; rejection outside current range",
+      "status": "PASS",
+      "ms": 444
+    }
+  ],
+  "regressionTests": [
+    {
+      "test": "Exact original orbit / Earth direction / phase in VR and App, 4097 instants",
+      "status": "PASS",
+      "ms": 30
+    },
+    {
+      "test": "All 1,050,625 RG heights round-trip exactly; no orientation loss",
+      "status": "PASS",
+      "ms": 263
+    },
+    {
+      "test": "Every stroke reversible, canceled transaction exact, redo and tile edges",
+      "status": "PASS",
+      "ms": 34
+    },
+    {
+      "test": "Ray picking uses real full resolution triangles at oblique angles",
+      "status": "PASS",
+      "ms": 3
+    },
+    {
+      "test": "Smooth reduces spike variance; level converges; no accumulation respects envelope",
+      "status": "PASS",
+      "ms": 13
+    },
+    {
+      "test": "Out of range export throws, including NaN",
+      "status": "PASS",
+      "ms": 35
+    },
+    {
+      "test": "Shadow masks block a physical ridge and reverse with sun direction",
+      "status": "PASS",
+      "ms": 3
+    },
+    {
+      "test": "Adaptive cycle refines dawn/dusk; masks and package validate",
+      "status": "PASS",
+      "ms": 42
+    },
+    {
+      "test": "Integration preserves original GLSL literals for WebGPU hash compatibility",
+      "status": "PASS",
+      "ms": 0
+    }
+  ],
+  "workerBake": {
+    "resolution": 513,
+    "samples": 94,
+    "bytes": 6210551,
+    "milliseconds": 1994,
+    "heightSHA256": "8e1dcc754fb9141bdb7a051e05db2d36af46e66aea5d2c6666bfaf8bd7a85141"
+  },
+  "uiLogic": {
+    "status": "PASS",
+    "renderer": "stubbed; no GPU/browser coverage",
+    "tested": "app.js, controls.js, studio-tools.js and scene-guides.js through actual HTML control IDs"
+  },
+  "extraChecks": [
+    "PASS: real selection worker, progress messages and cancellation",
+    "PASS: two-finger rollback and no residual-finger drawing",
+    "PASS: short touch preserves first point and interpolated movement",
+    "PASS: right/middle/Space navigation and Ctrl-wheel brush delegation",
+    "PASS: persistent map bounds after terrain update",
+    "PASS: active view buttons follow camera changes",
+    "PASS: JavaScript syntax and relative module dependencies",
+    "PASS: unique HTML IDs and control bindings",
+    "PASS: git diff --check"
+  ],
+  "runtimeLimits": [
+    "UI events were exercised with the real app/controllers and a stub renderer, not in a browser.",
+    "No visual browser/WebGL verification or physical iPhone/Safari/Quest performance measurement.",
+    "Ghosts are simplified metric references, not detailed game assets or exported objects.",
+    "Player radius 600 m is the reviewed movement limit, not a hand-interaction radius."
+  ]
+}

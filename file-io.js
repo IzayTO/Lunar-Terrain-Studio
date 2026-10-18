@@ -1,6 +1,6 @@
 import {zip,unzipSync,zlibSync} from './fflate.js';
-import {N,encodeRG,decodeRG,boundsOf} from './terrain-core.js';
-import {readShadows} from './shadow-core.js';
+import {N,encodeRG,decodeRG,boundsOf} from './terrain-core.js?v=2.0.0';
+import {readShadows} from './shadow-core.js?v=2.0.0';
 export async function readHeightPNG(source){const image=new Image();image.src=typeof source==='string'?source:URL.createObjectURL(source);try{await image.decode();if(image.width!==N||image.height!==N)throw Error('Se requiere un PNG RG de 1025 × 1025.');const c=document.createElement('canvas');c.width=N;c.height=N;const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(image,0,0);return decodeRG(ctx.getImageData(0,0,N,N).data);}finally{if(typeof source!=='string')URL.revokeObjectURL(image.src);}}
 export async function heightHash(h){const rg=encodeRG(h),bytes=new Uint8Array(N*N*2);for(let i=0;i<N*N;i++){bytes[i*2]=rg[i*4];bytes[i*2+1]=rg[i*4+1];}const digest=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(digest)].map(n=>n.toString(16).padStart(2,'0')).join('');}
 const crcTable=Uint32Array.from({length:256},(_,n)=>{for(let k=0;k<8;k++)n=n&1?0xedb88320^(n>>>1):n>>>1;return n>>>0;});
